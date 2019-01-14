@@ -19,6 +19,12 @@
     <Filter Include="Source Files">
       <UniqueIdentifier>{a055882f-f196-4c68-825c-e1fe91505808}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Raytracer">
+      <UniqueIdentifier>{2b5ce2f4-9caa-4e11-a0ab-d89fa7d225af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Raytracer\Header Files">
+      <UniqueIdentifier>{dabceb97-f7be-47f0-9419-765d5f44e2a6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -28,6 +34,9 @@
   <ItemGroup>
     <ClInclude Include="Math\include\Vec3.h">
       <Filter>Math\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Raytracer\include\Ray.h">
+      <Filter>Raytracer\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
