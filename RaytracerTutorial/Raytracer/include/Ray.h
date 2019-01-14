@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Vec3.h"
+#include "Math/include/Vec3.h"
 
 class Ray
 {
 public:
 	Ray() = default;
-	Ray(const Vec3 &origin, const vec3 &direction) :
+	Ray(const Vec3 &origin, const Vec3 &direction) :
 		mOrigin(origin), mDirection(direction) {}
 
 	~Ray() = default;
