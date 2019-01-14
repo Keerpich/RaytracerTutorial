@@ -23,7 +23,7 @@ public:
 	inline const Vec3& operator+() const { return *this; }
 	inline Vec3 operator-() const { return Vec3(-e[0], -e[1], -e[2]); }
 	inline float operator[](int i) const { return e[i]; }
-	inline float& operator[](int i) const { return e[i]; }
+	inline float& operator[](int i) { return e[i]; }
 
 	inline Vec3& operator+=(const Vec3 &v2);
 	inline Vec3& operator-=(const Vec3 &v2);
@@ -35,6 +35,20 @@ public:
 	inline float length() const;
 	inline float squared_length() const;
 	inline void make_unit_vector();
+
+	//operators and operations
+	friend std::istream& operator>>(std::istream &is, Vec3 &t);
+	friend std::ostream& operator<<(std::ostream &os, Vec3 &t);
+	friend Vec3 operator+(const Vec3 &v1, const Vec3 &v2);
+	friend Vec3 operator-(const Vec3 &v1, const Vec3 &v2);
+	friend Vec3 operator*(const Vec3 &v1, const Vec3 &v2);
+	friend Vec3 operator/(const Vec3 &v1, const Vec3 &v2);
+	friend Vec3 operator*(float t, const Vec3 &v);
+	friend Vec3 operator*(const Vec3 &v, float t);
+	friend Vec3 operator/(const Vec3 &v, float t);
+	friend float dot(const Vec3 &v1, const Vec3 &v2);
+	friend Vec3 cross(const Vec3 &v1, const Vec3 &v2);
+	friend Vec3 unit_vector();
 
 private:
 	std::array<float, 3> e;
@@ -54,7 +68,7 @@ inline std::ostream& operator<<(std::ostream &os, Vec3 &t)
 
 inline void Vec3::make_unit_vector()
 {
-	float k = 1.0 / sqrt(e[0] * e[0] + e[1] * e[1] + e[2] * e[2]);
+	float k = 1.0f / sqrt(e[0] * e[0] + e[1] * e[1] + e[2] * e[2]);
 	e[0] *= k; e[1] *= k; e[2] *= k;
 }
 
