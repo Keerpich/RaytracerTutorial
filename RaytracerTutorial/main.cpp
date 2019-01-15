@@ -5,7 +5,7 @@
 
 #define OUTPUT_TO_FILE
 
-bool hit_sphere(const Vec3 &center, float radius, const Ray &r)
+float hit_sphere(const Vec3 &center, float radius, const Ray &r)
 {
 	Vec3 oc = r.origin() - center;
 	float a = dot(r.direction(), r.direction());
@@ -14,18 +14,24 @@ bool hit_sphere(const Vec3 &center, float radius, const Ray &r)
 
 	float discrimant = b * b - 4 * a * c;
 
-	return discrimant >= 0;
+	if (discrimant < 0)
+		return -1.0f;
+	else
+		return (-b - sqrt(discrimant)) / 2.0f;
 }
 
 Vec3 color(const Ray& r)
 {
-	if (hit_sphere(Vec3(0.f, 0.f, -1.f), 0.5f, r))
+	float t = hit_sphere(Vec3(0.f, 0.f, -1.f), 0.5f, r);
+
+	if (t > 0.f)
 	{
-		return Vec3(1.f, 0.f, 0.f);
+		Vec3 N = unit_vector(r.point_at_parameter(t) - Vec3(0.f, 0.f, -1.f));
+		return 0.5f * Vec3(N.x() + 1, N.y() + 1, N.z() + 1);
 	}
 
 	Vec3 unit_direction = unit_vector(r.direction());
-	float t = 0.5f * (unit_direction.y() + 1.0f);
+	t = 0.5f * (unit_direction.y() + 1.0f);
 	return (1.0f - t) * Vec3(1.0f, 1.0f, 1.0f) + t * Vec3(0.5f, 0.7f, 1.0f);
 }
 
