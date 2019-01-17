@@ -10,12 +10,30 @@
 
 #define OUTPUT_TO_FILE
 
+Vec3 random_in_unit_sphere()
+{
+	//init random
+	std::random_device random_device;
+	std::default_random_engine random_engine(random_device());
+	std::uniform_real_distribution<> random_distribution;
+
+	Vec3 p;
+
+	do
+	{
+		p = 2.f * Vec3(random_distribution(random_engine), random_distribution(random_engine), random_distribution(random_engine)) - Vec3(1.f, 1.f, 1.f);
+	} while(p.squared_length() >= 1.f);
+
+	return p;
+}
+
 Vec3 color(const Ray& r, std::shared_ptr<Hitable> world)
 {
 	hit_record rec;
 	if (world->hit(r, 0.0, FLT_MAX, rec))
 	{
-		return 0.5f * Vec3(rec.normal.x() + 1, rec.normal.y() + 1, rec.normal.z() + 1);
+		Vec3 target = rec.p + rec.normal + random_in_unit_sphere();
+		return 0.5f * color (Ray(rec.p, target-rec.p), world);
 	}
 	else
 	{
