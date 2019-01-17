@@ -26,7 +26,7 @@
             "presentation": {
                 "reveal": "always"
             },
-            "dependsOn":"build"
+            "dependsOn": "build"
         },
         {
             "label": "build run display",
@@ -36,7 +36,8 @@
             "presentation": {
                 "reveal": "silent"
             },
-            "dependsOn":"build run"
+            "dependsOn": "build run",
+            "problemMatcher": []
         }
     ]
 }

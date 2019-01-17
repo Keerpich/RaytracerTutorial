@@ -72,7 +72,7 @@
   <PropertyGroup />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
@@ -123,6 +123,7 @@
     <ClInclude Include="Objects\include\hitable.h" />
     <ClInclude Include="Objects\include\sphere.h" />
     <ClInclude Include="Objects\include\HitableList.h" />
+    <ClInclude Include="Camera\include\camera.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

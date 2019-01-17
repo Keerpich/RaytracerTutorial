@@ -1,6 +1,8 @@
 #include <iostream>
 #include <fstream>
 #include <cfloat>
+#include <random>
+#include "Camera/include/camera.h"
 #include "Math/include/Vec3.h"
 #include "Raytracer/include/Ray.h"
 #include "Objects/include/Sphere.h"
@@ -27,6 +29,7 @@ int main()
 {
 	int nx = 200;
 	int ny = 100;
+	int ns = 100;
 
 	//print header
 #ifdef OUTPUT_TO_FILE
@@ -48,16 +51,30 @@ int main()
 
 	std::shared_ptr<Hitable> world = std::make_shared<HitableList>(list);
 
+	Camera cam;
+
+	//init random
+	std::random_device random_device;
+	std::default_random_engine random_engine(random_device());
+	std::uniform_real_distribution<> random_distribution;
+
 	for (int j = ny - 1; j >= 0; j--)
 	{
 		for (int i = 0; i < nx; i++)
 		{
-			float u = static_cast<float>(i) / static_cast<float>(nx);
-			float v = static_cast<float>(j) / static_cast<float>(ny);
+			Vec3 col(0.f, 0.f, 0.f);
+			for (int s = 0; s < ns; s++)
+			{
+				float u = static_cast<float>(i + random_distribution(random_engine)) / static_cast<float>(nx);
+				float v = static_cast<float>(j + random_distribution(random_engine)) / static_cast<float>(ny);
 
-			Ray r(origin, lower_left_corner + u * horizontal + v * vertical);
-			Vec3 col = color(r, world);
+				Ray r = cam.get_ray(u, v);
+				Vec3 p = r.point_at_parameter(2.f);
+				col += color(r,world);
+			}
 			
+			col /= static_cast<float>(ns);
+
 			int ir = static_cast<int>(255.99f * col.r());
 			int ig = static_cast<int>(255.99f * col.g());
 			int ib = static_cast<int>(255.99f * col.b());
