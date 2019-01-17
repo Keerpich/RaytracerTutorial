@@ -1,0 +1,42 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "msbuild",
+            "args": [
+                "RaytracerTutorial/RaytracerTutorial.vcxproj",
+                "/property:GenerateFullPaths=true",
+                "/t:build"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "build run",
+            "type": "shell",
+            "command": ".\\RaytracerTutorial\\Debug\\RaytracerTutorial.exe",
+            "group": "build",
+            "presentation": {
+                "reveal": "always"
+            },
+            "dependsOn":"build"
+        },
+        {
+            "label": "build run display",
+            "type": "shell",
+            "command": ".\\test.ppm",
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "dependsOn":"build run"
+        }
+    ]
+}
