@@ -26,7 +26,8 @@
             "presentation": {
                 "reveal": "always"
             },
-            "dependsOn": "build"
+            "dependsOn": "build",
+            "problemMatcher": []
         },
         {
             "label": "build run display",

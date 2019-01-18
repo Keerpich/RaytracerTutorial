@@ -1,7 +1,9 @@
 #include <iostream>
+#include <chrono>
 #include <fstream>
 #include <cfloat>
 #include <random>
+#include <thread>
 #include "Camera/include/camera.h"
 #include "Math/include/Vec3.h"
 #include "Raytracer/include/Ray.h"
@@ -9,6 +11,8 @@
 #include "Objects/include/HitableList.h"
 
 #define OUTPUT_TO_FILE
+
+Vec3 **MyPPMFile;
 
 Vec3 random_in_unit_sphere()
 {
@@ -43,8 +47,39 @@ Vec3 color(const Ray& r, std::shared_ptr<Hitable> world)
 	}
 }
 
+void EmitRay(std::shared_ptr<Hitable> world, Camera cam, int start_x, int end_x, int ny, int ns, int nx)
+{	
+	//init random
+	std::random_device random_device;
+	std::default_random_engine random_engine(random_device());
+	std::uniform_real_distribution<> random_distribution;
+
+	for (int j = ny - 1; j >= 0; j--)
+	{
+		for (int i = start_x; i < end_x; i++)
+		{
+			Vec3 col(0.f, 0.f, 0.f);
+			for (int s = 0; s < ns; s++)
+			{
+				float u = static_cast<float>(i + random_distribution(random_engine)) / static_cast<float>(nx);
+				float v = static_cast<float>(j + random_distribution(random_engine)) / static_cast<float>(ny);
+
+				Ray r = cam.get_ray(u, v);
+				Vec3 p = r.point_at_parameter(2.f);
+				col += color(r,world);
+			}
+			
+			col /= static_cast<float>(ns);
+
+			MyPPMFile[i][j] = col;
+		}
+	}
+}
+
 int main()
 {
+	auto start_time = std::chrono::high_resolution_clock::now();
+
 	int nx = 200;
 	int ny = 100;
 	int ns = 100;
@@ -71,31 +106,31 @@ int main()
 
 	Camera cam;
 
-	//init random
-	std::random_device random_device;
-	std::default_random_engine random_engine(random_device());
-	std::uniform_real_distribution<> random_distribution;
+	MyPPMFile = new Vec3*[nx];
+	for(int x = 0; x < nx; x++)
+		MyPPMFile[x] = new Vec3[ny];
+
+	const int numberOfThreads = 0;
+
+	//insert thread creation here
+	std::vector<std::thread> threads;
+	for (int i = 0; i < numberOfThreads; i++)
+	{
+		threads.push_back(std::thread(EmitRay, world, cam, i * (nx / numberOfThreads), (i + 1) * (nx / numberOfThreads), ny, ns, nx));
+	}
+
+	for (auto& thread : threads)
+	{
+		thread.join();
+	}
 
 	for (int j = ny - 1; j >= 0; j--)
 	{
 		for (int i = 0; i < nx; i++)
 		{
-			Vec3 col(0.f, 0.f, 0.f);
-			for (int s = 0; s < ns; s++)
-			{
-				float u = static_cast<float>(i + random_distribution(random_engine)) / static_cast<float>(nx);
-				float v = static_cast<float>(j + random_distribution(random_engine)) / static_cast<float>(ny);
-
-				Ray r = cam.get_ray(u, v);
-				Vec3 p = r.point_at_parameter(2.f);
-				col += color(r,world);
-			}
-			
-			col /= static_cast<float>(ns);
-
-			int ir = static_cast<int>(255.99f * col.r());
-			int ig = static_cast<int>(255.99f * col.g());
-			int ib = static_cast<int>(255.99f * col.b());
+			int ir = static_cast<int>(255.99f * MyPPMFile[i][j].r());
+			int ig = static_cast<int>(255.99f * MyPPMFile[i][j].g());
+			int ib = static_cast<int>(255.99f * MyPPMFile[i][j].b());
 
 #ifdef OUTPUT_TO_FILE
 			outFile << ir << " " << ig << " " << ib << std::endl;
@@ -104,6 +139,14 @@ int main()
 #endif
 		}
 	}
+
+	for (int x = 0; x < nx; x++)
+		delete[] MyPPMFile[x];
+	delete[] MyPPMFile;
+
+	auto end_time = std::chrono::high_resolution_clock::now();
+
+	std::cout << "Duration: " << std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count();
 
 	return 0;
 }
