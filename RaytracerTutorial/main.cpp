@@ -34,7 +34,7 @@ Vec3 random_in_unit_sphere()
 Vec3 color(const Ray& r, std::shared_ptr<Hitable> world)
 {
 	hit_record rec;
-	if (world->hit(r, 0.0, FLT_MAX, rec))
+	if (world->hit(r, 0.001, FLT_MAX, rec))
 	{
 		Vec3 target = rec.p + rec.normal + random_in_unit_sphere();
 		return 0.5f * color (Ray(rec.p, target-rec.p), world);
@@ -71,7 +71,7 @@ void EmitRay(std::shared_ptr<Hitable> world, Camera cam, int start_x, int end_x,
 			
 			col /= static_cast<float>(ns);
 
-			MyPPMFile[i][j] = col;
+			MyPPMFile[i][j] = Vec3(sqrt(col.r()), sqrt(col.g()), sqrt(col.b()));
 		}
 	}
 }
