@@ -110,7 +110,7 @@ int main()
 	for(int x = 0; x < nx; x++)
 		MyPPMFile[x] = new Vec3[ny];
 
-	const int numberOfThreads = 0;
+	const int numberOfThreads = 10;
 
 	//insert thread creation here
 	std::vector<std::thread> threads;
