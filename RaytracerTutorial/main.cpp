@@ -6,38 +6,33 @@
 #include <thread>
 #include "Camera/include/camera.h"
 #include "Math/include/Vec3.h"
+#include "Math/include/Utilities.h"
 #include "Raytracer/include/Ray.h"
 #include "Objects/include/Sphere.h"
 #include "Objects/include/HitableList.h"
+#include "Materials/include/lambertian.h"
+#include "Materials/include/metal.h"
 
 #define OUTPUT_TO_FILE
 
 Vec3 **MyPPMFile;
 
-Vec3 random_in_unit_sphere()
-{
-	//init random
-	std::random_device random_device;
-	std::default_random_engine random_engine(random_device());
-	std::uniform_real_distribution<> random_distribution;
-
-	Vec3 p;
-
-	do
-	{
-		p = 2.f * Vec3(random_distribution(random_engine), random_distribution(random_engine), random_distribution(random_engine)) - Vec3(1.f, 1.f, 1.f);
-	} while(p.squared_length() >= 1.f);
-
-	return p;
-}
-
-Vec3 color(const Ray& r, std::shared_ptr<Hitable> world)
+Vec3 color(const Ray& r, std::shared_ptr<Hitable> world, int depth)
 {
 	hit_record rec;
-	if (world->hit(r, 0.001, FLT_MAX, rec))
+	if (world->hit(r, 0.001f, FLT_MAX, rec))
 	{
-		Vec3 target = rec.p + rec.normal + random_in_unit_sphere();
-		return 0.5f * color (Ray(rec.p, target-rec.p), world);
+		Ray scattered;
+		Vec3 attenuation;
+
+		if (depth < 50 && rec.mat_ptr->scatter(r, rec, attenuation, scattered))
+		{
+			return attenuation * color(scattered, world, depth + 1);
+		}
+		else
+		{
+			return Vec3(0.f, 0.f, 0.f);
+		}
 	}
 	else
 	{
@@ -66,7 +61,7 @@ void EmitRay(std::shared_ptr<Hitable> world, Camera cam, int start_x, int end_x,
 
 				Ray r = cam.get_ray(u, v);
 				Vec3 p = r.point_at_parameter(2.f);
-				col += color(r,world);
+				col += color(r,world, 0);
 			}
 			
 			col /= static_cast<float>(ns);
@@ -99,8 +94,10 @@ int main()
 
 	std::list<std::shared_ptr<Hitable>> list;
 
-	list.push_back(std::make_shared<Sphere>(Vec3(0.f, 0.f, -1.f), 0.5f));
-	list.push_back(std::make_shared<Sphere>(Vec3(0.f, -100.5f, -1.f), 100.f));
+	list.push_back(std::make_shared<Sphere>(Vec3(0.f, 0.f, -1.f), 0.5f, std::make_shared<Lambertian>(Vec3(0.8f, 0.3f, 0.3f))));
+	list.push_back(std::make_shared<Sphere>(Vec3(0.f, -100.5f, -1.f), 100.f, std::make_shared<Lambertian>(Vec3(0.8f, 0.8f, 0.f))));
+	list.push_back(std::make_shared<Sphere>(Vec3(1.f, 0.f, -1.f), 0.5f, std::make_shared<Metal>(Vec3(0.8f, 0.6f, 0.2f))));
+	list.push_back(std::make_shared<Sphere>(Vec3(-1.f, 0.f, -1.f), 0.5f, std::make_shared<Metal>(Vec3(0.8f, 0.8f, 0.8f))));
 
 	std::shared_ptr<Hitable> world = std::make_shared<HitableList>(list);
 

@@ -119,11 +119,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\include\Vec3.h" />
+    <ClInclude Include="Math\include\Utilities.h" />
     <ClInclude Include="Raytracer\include\Ray.h" />
     <ClInclude Include="Objects\include\hitable.h" />
     <ClInclude Include="Objects\include\sphere.h" />
     <ClInclude Include="Objects\include\HitableList.h" />
     <ClInclude Include="Camera\include\camera.h" />
+    <ClInclude Include="Materials\include\material.h" />
+    <ClInclude Include="Materials\include\lambertian.h" />
+    <ClInclude Include="Materials\include\metal.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
