@@ -96,8 +96,8 @@ int main()
 
 	list.push_back(std::make_shared<Sphere>(Vec3(0.f, 0.f, -1.f), 0.5f, std::make_shared<Lambertian>(Vec3(0.8f, 0.3f, 0.3f))));
 	list.push_back(std::make_shared<Sphere>(Vec3(0.f, -100.5f, -1.f), 100.f, std::make_shared<Lambertian>(Vec3(0.8f, 0.8f, 0.f))));
-	list.push_back(std::make_shared<Sphere>(Vec3(1.f, 0.f, -1.f), 0.5f, std::make_shared<Metal>(Vec3(0.8f, 0.6f, 0.2f))));
-	list.push_back(std::make_shared<Sphere>(Vec3(-1.f, 0.f, -1.f), 0.5f, std::make_shared<Metal>(Vec3(0.8f, 0.8f, 0.8f))));
+	list.push_back(std::make_shared<Sphere>(Vec3(1.f, 0.f, -1.f), 0.5f, std::make_shared<Metal>(Vec3(0.8f, 0.6f, 0.2f), 0.f)));
+	list.push_back(std::make_shared<Sphere>(Vec3(-1.f, 0.f, -1.f), 0.5f, std::make_shared<Metal>(Vec3(0.8f, 0.8f, 0.8f), 0.f)));
 
 	std::shared_ptr<Hitable> world = std::make_shared<HitableList>(list);
 
