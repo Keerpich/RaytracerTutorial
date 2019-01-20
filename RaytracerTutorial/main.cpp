@@ -3,6 +3,7 @@
 #include <fstream>
 #include <cfloat>
 #include <thread>
+#include <cmath>
 #include "Camera/include/camera.h"
 #include "Math/include/Vec3.h"
 #include "Math/include/Utilities.h"
@@ -89,15 +90,19 @@ int main()
 
 	std::list<std::shared_ptr<Hitable>> list;
 
+	//float R = cos(Utilities::PI()/4);
+	//list.push_back(std::make_shared<Sphere>(Vec3(-R, 0.f, -1.f), R, std::make_shared<Lambertian>(Vec3(0.f, 0.f, 1.f))));
+	//list.push_back(std::make_shared<Sphere>(Vec3(R, 0.f, -1.f), R, std::make_shared<Lambertian>(Vec3(1.f, 0.f, 0.f))));
+
 	list.push_back(std::make_shared<Sphere>(Vec3(0.f, 0.f, -1.f), 0.5f, std::make_shared<Lambertian>(Vec3(0.1f, 0.2f, 0.5f))));
 	list.push_back(std::make_shared<Sphere>(Vec3(0.f, -100.5f, -1.f), 100.f, std::make_shared<Lambertian>(Vec3(0.8f, 0.8f, 0.f))));
 	list.push_back(std::make_shared<Sphere>(Vec3(1.f, 0.f, -1.f), 0.5f, std::make_shared<Metal>(Vec3(0.8f, 0.6f, 0.2f), 0.f)));
 	list.push_back(std::make_shared<Sphere>(Vec3(-1.f, 0.f, -1.f), 0.5f, std::make_shared<Dielectric>(1.5f)));
-	list.push_back(std::make_shared<Sphere>(Vec3(-1.f, 0.f, -1.f), -0.45f, std::make_shared<Dielectric>(1.5f)));
+	//list.push_back(std::make_shared<Sphere>(Vec3(-1.f, 0.f, -1.f), -0.45f, std::make_shared<Dielectric>(1.5f)));
 
 	std::shared_ptr<Hitable> world = std::make_shared<HitableList>(list);
 
-	Camera cam;
+	Camera cam(Vec3(-2.f, 2.f, 1.f), Vec3(0.f, 0.f, -1.f), Vec3(0.f, 1.f, 0.f), 15.f, static_cast<float>(nx) /  static_cast<float>(ny));
 
 	MyPPMFile = new Vec3*[nx];
 	for(int x = 0; x < nx; x++)

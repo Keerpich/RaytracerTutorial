@@ -3,6 +3,10 @@
 #include "Vec3.h"
 #include <random>
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+#undef _USE_MATH_DEFINES
+
 class Utilities
 {
 public:
@@ -58,5 +62,10 @@ public:
         static std::uniform_real_distribution<> random_distribution;
 
         return static_cast<float>(random_distribution(random_engine));
+    }
+
+    static constexpr float PI()
+    {
+        return M_PI;
     }
 };
