@@ -128,6 +128,7 @@
     <ClInclude Include="Materials\include\material.h" />
     <ClInclude Include="Materials\include\lambertian.h" />
     <ClInclude Include="Materials\include\metal.h" />
+    <ClInclude Include="Materials\include\dielectric.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

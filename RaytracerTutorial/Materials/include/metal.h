@@ -9,7 +9,7 @@ class Metal : public Material
 public:
     Metal(const Vec3 &albedo, float fuzz) : 
         mAlbedo(albedo), 
-        mFuzz(std::max(1.f, fuzz)) {}
+        mFuzz(std::min(1.f, fuzz)) {}
 
     virtual bool scatter(const Ray& r_in, const hit_record& rec, Vec3& attenuation, Ray& scattered) const
     {

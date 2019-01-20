@@ -2,7 +2,6 @@
 #include <chrono>
 #include <fstream>
 #include <cfloat>
-#include <random>
 #include <thread>
 #include "Camera/include/camera.h"
 #include "Math/include/Vec3.h"
@@ -12,6 +11,7 @@
 #include "Objects/include/HitableList.h"
 #include "Materials/include/lambertian.h"
 #include "Materials/include/metal.h"
+#include "Materials/include/dielectric.h"
 
 #define OUTPUT_TO_FILE
 
@@ -44,11 +44,6 @@ Vec3 color(const Ray& r, std::shared_ptr<Hitable> world, int depth)
 
 void EmitRay(std::shared_ptr<Hitable> world, Camera cam, int start_x, int end_x, int ny, int ns, int nx)
 {	
-	//init random
-	std::random_device random_device;
-	std::default_random_engine random_engine(random_device());
-	std::uniform_real_distribution<> random_distribution;
-
 	for (int j = ny - 1; j >= 0; j--)
 	{
 		for (int i = start_x; i < end_x; i++)
@@ -56,8 +51,8 @@ void EmitRay(std::shared_ptr<Hitable> world, Camera cam, int start_x, int end_x,
 			Vec3 col(0.f, 0.f, 0.f);
 			for (int s = 0; s < ns; s++)
 			{
-				float u = static_cast<float>(i + random_distribution(random_engine)) / static_cast<float>(nx);
-				float v = static_cast<float>(j + random_distribution(random_engine)) / static_cast<float>(ny);
+				float u = static_cast<float>(i + Utilities::random_float()) / static_cast<float>(nx);
+				float v = static_cast<float>(j + Utilities::random_float()) / static_cast<float>(ny);
 
 				Ray r = cam.get_ray(u, v);
 				Vec3 p = r.point_at_parameter(2.f);
@@ -94,10 +89,11 @@ int main()
 
 	std::list<std::shared_ptr<Hitable>> list;
 
-	list.push_back(std::make_shared<Sphere>(Vec3(0.f, 0.f, -1.f), 0.5f, std::make_shared<Lambertian>(Vec3(0.8f, 0.3f, 0.3f))));
+	list.push_back(std::make_shared<Sphere>(Vec3(0.f, 0.f, -1.f), 0.5f, std::make_shared<Lambertian>(Vec3(0.1f, 0.2f, 0.5f))));
 	list.push_back(std::make_shared<Sphere>(Vec3(0.f, -100.5f, -1.f), 100.f, std::make_shared<Lambertian>(Vec3(0.8f, 0.8f, 0.f))));
 	list.push_back(std::make_shared<Sphere>(Vec3(1.f, 0.f, -1.f), 0.5f, std::make_shared<Metal>(Vec3(0.8f, 0.6f, 0.2f), 0.f)));
-	list.push_back(std::make_shared<Sphere>(Vec3(-1.f, 0.f, -1.f), 0.5f, std::make_shared<Metal>(Vec3(0.8f, 0.8f, 0.8f), 0.f)));
+	list.push_back(std::make_shared<Sphere>(Vec3(-1.f, 0.f, -1.f), 0.5f, std::make_shared<Dielectric>(1.5f)));
+	list.push_back(std::make_shared<Sphere>(Vec3(-1.f, 0.f, -1.f), -0.45f, std::make_shared<Dielectric>(1.5f)));
 
 	std::shared_ptr<Hitable> world = std::make_shared<HitableList>(list);
 

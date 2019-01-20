@@ -39,6 +39,16 @@
             },
             "dependsOn": "build run",
             "problemMatcher": []
+        },
+        {
+            "label": "display",
+            "type": "shell",
+            "command": ".\\test.ppm",
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": []
         }
     ]
 }
