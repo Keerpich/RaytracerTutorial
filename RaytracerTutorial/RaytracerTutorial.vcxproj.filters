@@ -38,5 +38,32 @@
     <ClInclude Include="Raytracer\include\Ray.h">
       <Filter>Raytracer\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Math\include\Utilities.h">
+      <Filter>Math\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\include\hitable.h">
+      <Filter>Math\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\include\sphere.h">
+      <Filter>Math\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\include\HitableList.h">
+      <Filter>Math\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera\include\camera.h">
+      <Filter>Math\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Materials\include\material.h">
+      <Filter>Math\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Materials\include\lambertian.h">
+      <Filter>Math\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Materials\include\metal.h">
+      <Filter>Math\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Materials\include\dielectric.h">
+      <Filter>Math\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

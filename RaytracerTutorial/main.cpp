@@ -43,6 +43,59 @@ Vec3 color(const Ray& r, std::shared_ptr<Hitable> world, int depth)
 	}
 }
 
+std::shared_ptr<Hitable> RandomWorld()
+{
+	int n = 500;
+
+	std::list<std::shared_ptr<Hitable>> list;
+	list.push_back(std::make_shared<Sphere>(Vec3(0.f, -1000.f, 0.f), 1000.f, std::make_shared<Lambertian>(Vec3(0.5f, 0.5f, 0.5f))));
+
+	for (int a = -11; a < 11; a++)
+	{
+		for (int b = -11; b < 11; b++)
+		{
+			float choose_mat = Utilities::random_float();
+			Vec3 center(a + 0.9f * Utilities::random_float(), 0.2f, b + 0.9f * Utilities::random_float());
+
+			if ((center - Vec3(4.f, 0.2f, 0.f)).length() > 0.9)
+			{
+				if (choose_mat < 0.8f) //diffuse
+				{
+					Vec3 albedo = Vec3(
+						Utilities::random_float() * Utilities::random_float(),
+						Utilities::random_float() * Utilities::random_float(),
+						Utilities::random_float() * Utilities::random_float()
+					);
+
+					list.push_back(std::make_shared<Sphere>(center, 0.2f, std::make_shared<Lambertian>(albedo)));
+				}
+				else if (choose_mat < 0.95f) //metal
+				{
+					Vec3 albedo = Vec3(
+						0.5f * (1 + Utilities::random_float()),
+						0.5f * (1 + Utilities::random_float()),
+						0.5f * (1 + Utilities::random_float())
+					);
+
+					float fuzziness = 0.5f * Utilities::random_float();
+
+					list.push_back(std::make_shared<Sphere>(center, 0.2f, std::make_shared<Metal>(albedo, fuzziness)));
+				}
+				else //glass
+				{
+					list.push_back(std::make_shared<Sphere>(center, 0.2f, std::make_shared<Dielectric>(1.f)));
+				}
+			}
+		}
+	}
+
+	list.push_back(std::make_shared<Sphere>(Vec3(0.f, 1.f, 0.f), 1.f, std::make_shared<Dielectric>(1.5f)));
+	list.push_back(std::make_shared<Sphere>(Vec3(-4.f, 1.f, 0.f), 1.f, std::make_shared<Lambertian>(Vec3(0.4f, 0.2f, 0.1f))));
+	list.push_back(std::make_shared<Sphere>(Vec3(4.f, 1.f, 0.f), 1.f, std::make_shared<Metal>(Vec3(0.7f, 0.6f, 0.5f), 0.f)));
+
+	return std::make_shared<HitableList>(list);
+}
+
 void EmitRay(std::shared_ptr<Hitable> world, Camera cam, int start_x, int end_x, int ny, int ns, int nx)
 {	
 	for (int j = ny - 1; j >= 0; j--)
@@ -71,8 +124,8 @@ int main()
 {
 	auto start_time = std::chrono::high_resolution_clock::now();
 
-	int nx = 200;
-	int ny = 100;
+	int nx = 1920;
+	int ny = 1080;
 	int ns = 100;
 
 	//print header
@@ -83,32 +136,21 @@ int main()
 	std::cout << "P3" << std::endl << nx << " " << ny << std::endl << 255 << std::endl;
 #endif
 
-	Vec3 lower_left_corner(-2.0f, -1.0f, -1.0f);
-	Vec3 horizontal(4.0f, 0.0f, 0.0f);
-	Vec3 vertical(0.0f, 2.0f, 0.0f);
-	Vec3 origin(0.0f, 0.0f, 0.0f);
+	//Camera setup
+	Vec3 lookFrom(13.f, 2.f, 3.f);
+	Vec3 lookAt(0.f, 0.f, 0.f);
+	float dist_to_focus = 10.f;
+	float aperture = .1f;
+	Camera cam(lookFrom, lookAt, Vec3(0.f, 1.f, 0.f), 45.f, static_cast<float>(nx) /  static_cast<float>(ny), aperture, dist_to_focus);
 
-	std::list<std::shared_ptr<Hitable>> list;
-
-	//float R = cos(Utilities::PI()/4);
-	//list.push_back(std::make_shared<Sphere>(Vec3(-R, 0.f, -1.f), R, std::make_shared<Lambertian>(Vec3(0.f, 0.f, 1.f))));
-	//list.push_back(std::make_shared<Sphere>(Vec3(R, 0.f, -1.f), R, std::make_shared<Lambertian>(Vec3(1.f, 0.f, 0.f))));
-
-	list.push_back(std::make_shared<Sphere>(Vec3(0.f, 0.f, -1.f), 0.5f, std::make_shared<Lambertian>(Vec3(0.1f, 0.2f, 0.5f))));
-	list.push_back(std::make_shared<Sphere>(Vec3(0.f, -100.5f, -1.f), 100.f, std::make_shared<Lambertian>(Vec3(0.8f, 0.8f, 0.f))));
-	list.push_back(std::make_shared<Sphere>(Vec3(1.f, 0.f, -1.f), 0.5f, std::make_shared<Metal>(Vec3(0.8f, 0.6f, 0.2f), 0.f)));
-	list.push_back(std::make_shared<Sphere>(Vec3(-1.f, 0.f, -1.f), 0.5f, std::make_shared<Dielectric>(1.5f)));
-	//list.push_back(std::make_shared<Sphere>(Vec3(-1.f, 0.f, -1.f), -0.45f, std::make_shared<Dielectric>(1.5f)));
-
-	std::shared_ptr<Hitable> world = std::make_shared<HitableList>(list);
-
-	Camera cam(Vec3(-2.f, 2.f, 1.f), Vec3(0.f, 0.f, -1.f), Vec3(0.f, 1.f, 0.f), 15.f, static_cast<float>(nx) /  static_cast<float>(ny));
+	//create random scene here
+	std::shared_ptr<Hitable> world = RandomWorld();
 
 	MyPPMFile = new Vec3*[nx];
 	for(int x = 0; x < nx; x++)
 		MyPPMFile[x] = new Vec3[ny];
 
-	const int numberOfThreads = 10;
+	const int numberOfThreads = 5;
 
 	//insert thread creation here
 	std::vector<std::thread> threads;
@@ -144,7 +186,8 @@ int main()
 
 	auto end_time = std::chrono::high_resolution_clock::now();
 
-	std::cout << "Duration: " << std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count();
+	std::ofstream debugFile("debug.log");
+	debugFile << "Duration: " << std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count();
 
 	return 0;
 }
